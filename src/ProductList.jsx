@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./ProductList.css";
 import CartItem from "./CartItem";
+import About from "./AboutUs.jsx";
 import { addItem } from "./CartSlice";
 
 function ProductList() {
   const [showCart, setShowCart] = useState(false);
+  const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
   const [addedToCart, setAddedToCart] = useState({});
   const dispatch = useDispatch((state) => state);
   const items = useSelector((state) => state.cart.items);
@@ -271,6 +273,7 @@ function ProductList() {
     color: "white",
     fontSize: "30px",
     textDecoration: "none",
+    margin: "0 20px",
   };
   const handleCartClick = (e) => {
     e.preventDefault();
@@ -278,11 +281,18 @@ function ProductList() {
   };
   const handlePlantsClick = (e) => {
     e.preventDefault();
+    setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
     setShowCart(false); // Hide the cart when navigating to About Us
+  };
+  const handleAboutClick = (e) => {
+    e.preventDefault();
+    setShowPlants(false);
+    setShowCart(false);
   };
 
   const handleContinueShopping = (e) => {
     e.preventDefault();
+    setShowPlants(true);
     setShowCart(false);
   };
 
@@ -315,7 +325,7 @@ function ProductList() {
             <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>
               Plants
             </a>
-            <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>
+            <a href="#" onClick={(e) => handleAboutClick(e)} style={styleA}>
               About us
             </a>
           </div>
@@ -351,43 +361,49 @@ function ProductList() {
         </div>
       </div>
       {!showCart ? (
-        <div className="product-grid">
-          {plantsArray.map((el, key) => {
-            return (
-              <div key={key}>
-                <h1>
-                  <div className="plant_heading">{el.category}</div>
-                </h1>
-                <div className="product-list">
-                  {el.plants.map((el, key) => {
-                    return (
-                      <div className="product-card" key={key}>
-                        <div className="product-title">{el.name}</div>
-                        <img className="product-image" src={el.image} />
-                        <p>{el.description}</p>
-                        <p className="product-price">The price is {el.cost}</p>
-                        <button
-                          className={`product-button ${
-                            items.find((item) => item.name == el.name) &&
-                            "added-to-cart"
-                          }`}
-                          disabled={
-                            items.find((item) => item.name == el.name) && true
-                          }
-                          onClick={() => {
-                            handleAddToCart(el);
-                          }}
-                        >
-                          Add to Cart
-                        </button>
-                      </div>
-                    );
-                  })}
+        showPlants ? (
+          <div className="product-grid">
+            {plantsArray.map((el, key) => {
+              return (
+                <div key={key}>
+                  <h1>
+                    <div className="plant_heading">{el.category}</div>
+                  </h1>
+                  <div className="product-list">
+                    {el.plants.map((el, key) => {
+                      return (
+                        <div className="product-card" key={key}>
+                          <div className="product-title">{el.name}</div>
+                          <img className="product-image" src={el.image} />
+                          <p>{el.description}</p>
+                          <p className="product-price">
+                            The price is {el.cost}
+                          </p>
+                          <button
+                            className={`product-button ${
+                              items.find((item) => item.name == el.name) &&
+                              "added-to-cart"
+                            }`}
+                            disabled={
+                              items.find((item) => item.name == el.name) && true
+                            }
+                            onClick={() => {
+                              handleAddToCart(el);
+                            }}
+                          >
+                            Add to Cart
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <About />
+        )
       ) : (
         <CartItem onContinueShopping={handleContinueShopping} />
       )}
